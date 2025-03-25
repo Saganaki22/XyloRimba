@@ -2,7 +2,8 @@
 
 A beautiful, interactive virtual Xylophone and Marimba simulator that runs in your web browser. Play music, record your tunes, and even listen to the classic Tetris theme!
 
-![XyloRimba Screenshot](screenshot.png)
+![image](https://github.com/user-attachments/assets/da3f6bdf-a4c6-46b8-87f5-09f5e06a3583)
+
 
 ## 🎹 Features
 
