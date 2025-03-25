@@ -87,15 +87,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built with Web Audio API
 - Inspired by classic musical instruments
-- Thanks to all contributors and users!
-
-## 🔮 Future Plans
-
-- Additional instrument sounds
-- More demo songs
-- Save/load functionality for recordings
-- MIDI device support
-- Custom sound banks
 
 ---
-Made with ♥️ by XyloRimba Team 
+
