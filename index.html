@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xylophone & Marimba</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #8338ec;
+            --accent-color: #ff006e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #28a745;
+            
+            /* Xylophone Colors */
+            --xylophone-c: #ff0000;
+            --xylophone-d: #ff7f00;
+            --xylophone-e: #ffff00;
+            --xylophone-f: #00ff00;
+            --xylophone-g: #0000ff;
+            --xylophone-a: #4b0082;
+            --xylophone-b: #8f00ff;
+            
+            /* Marimba Colors */
+            --marimba-light: #d4a373;
+            --marimba-medium: #b08968;
+            --marimba-dark: #8b5e34;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            -webkit-touch-callout: none; /* iOS Safari */
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+        }
+        
+        .github-link {
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .github-link:hover {
+            transform: scale(1.1);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--secondary-color);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 2rem;
+            transition: background-color 0.5s ease;
+        }
+        
+        .instrument-container {
+            perspective: 1000px;
+            margin-bottom: 2rem;
+        }
+        
+        .xylophone, .marimba {
+            display: flex;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transform: rotateX(10deg);
+            transition: all 0.5s ease;
+        }
+        
+        .xylophone {
+            gap: 4px;
+        }
+        
+        .marimba {
+            gap: 6px;
+        }
+        
+        .bar {
+            position: relative;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: transform 0.1s ease, filter 0.1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .bar:hover {
+            filter: brightness(1.1);
+        }
+        
+        .bar.active {
+            transform: translateY(5px);
+            filter: brightness(1.2);
+        }
+        
+        /* Xylophone specific styles */
+        .xylophone .bar {
+            width: 40px;
+        }
+        
+        .xylophone .bar:nth-child(1) { height: 200px; background-color: var(--xylophone-c); }
+        .xylophone .bar:nth-child(2) { height: 190px; background-color: var(--xylophone-d); }
+        .xylophone .bar:nth-child(3) { height: 180px; background-color: var(--xylophone-e); }
+        .xylophone .bar:nth-child(4) { height: 170px; background-color: var(--xylophone-f); }
+        .xylophone .bar:nth-child(5) { height: 160px; background-color: var(--xylophone-g); }
+        .xylophone .bar:nth-child(6) { height: 150px; background-color: var(--xylophone-a); }
+        .xylophone .bar:nth-child(7) { height: 140px; background-color: var(--xylophone-b); }
+        .xylophone .bar:nth-child(8) { height: 130px; background-color: var(--xylophone-c); }
+        .xylophone .bar:nth-child(9) { height: 120px; background-color: var(--xylophone-d); }
+        .xylophone .bar:nth-child(10) { height: 110px; background-color: var(--xylophone-e); }
+        .xylophone .bar:nth-child(11) { height: 100px; background-color: var(--xylophone-f); }
+        .xylophone .bar:nth-child(12) { height: 90px; background-color: var(--xylophone-g); }
+        .xylophone .bar:nth-child(13) { height: 80px; background-color: var(--xylophone-a); }
+        
+        /* Marimba specific styles */
+        .marimba .bar {
+            position: relative;
+            background: linear-gradient(to bottom, var(--marimba-light), var(--marimba-dark));
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border-radius: 4px 4px 8px 8px;
+            width: 45px;
+        }
+        
+        .marimba .bar:nth-child(1) { height: 280px; }
+        .marimba .bar:nth-child(2) { height: 270px; }
+        .marimba .bar:nth-child(3) { height: 260px; }
+        .marimba .bar:nth-child(4) { height: 250px; }
+        .marimba .bar:nth-child(5) { height: 240px; }
+        .marimba .bar:nth-child(6) { height: 230px; }
+        .marimba .bar:nth-child(7) { height: 220px; }
+        .marimba .bar:nth-child(8) { height: 210px; }
+        .marimba .bar:nth-child(9) { height: 200px; }
+        .marimba .bar:nth-child(10) { height: 190px; }
+        .marimba .bar:nth-child(11) { height: 180px; }
+        .marimba .bar:nth-child(12) { height: 170px; }
+        .marimba .bar:nth-child(13) { height: 160px; }
+        .marimba .bar:nth-child(14) { height: 150px; }
+        .marimba .bar:nth-child(15) { height: 140px; }
+        .marimba .bar:nth-child(16) { height: 130px; }
+        .marimba .bar:nth-child(17) { height: 120px; }
+        
+        .marimba .bar::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 0 0 4px 4px;
+        }
+        
+        .keyboard-mapping {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .key-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 4px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            min-width: 40px;
+        }
+        
+        .key {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .note {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .controls-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        button {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .recording-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .record-btn {
+            background-color: var(--accent-color);
+        }
+        
+        .record-btn.recording {
+            background-color: #ff3860;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .play-btn {
+            background-color: var(--success-color);
+        }
+        
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            font-size: 0.8rem;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .xylophone, .marimba {
+                flex-wrap: wrap;
+                max-width: 100%;
+                justify-content: center;
+                transform: rotateX(0);
+            }
+            
+            .xylophone .bar, .marimba .bar {
+                margin-bottom: 5px;
+            }
+            
+            .keyboard-mapping {
+                flex-direction: column;
+                max-height: 200px;
+                overflow-y: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .title {
+                font-size: 1.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .xylophone .bar {
+                width: 30px;
+            }
+            
+            .marimba .bar {
+                width: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="title">Xylophone & Marimba</h1>
+        <a href="https://github.com/Saganaki22" target="_blank" class="github-link" title="GitHub">
+            <span class="material-icons">< ></span>
+        </a>
+    </header>
+    
+    <div class="controls">
+        <div class="switch-container">
+            <span>Xylophone</span>
+            <label class="switch">
+                <input type="checkbox" id="instrument-toggle">
+                <span class="slider"></span>
+            </label>
+            <span>Marimba</span>
+        </div>
+        
+        <div class="controls-container">
+            <div class="recording-controls">
+                <button id="record-btn" class="record-btn">Record</button>
+                <button id="play-btn" class="play-btn">Play</button>
+                <button id="stop-btn">Stop</button>
+            </div>
+            <button id="demo-btn">Play Tetris Theme</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="instrument-container">
+            <div class="xylophone" id="xylophone">
+                <!-- Xylophone bars will be dynamically generated -->
+            </div>
+            <div class="marimba" id="marimba" style="display: none;">
+                <!-- Marimba bars will be dynamically generated -->
+            </div>
+        </div>
+        
+        <div class="keyboard-mapping" id="keyboard-mapping">
+            <!-- Keyboard mapping will be dynamically generated -->
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 XyloRimba</p>
+    </footer>
+    
+    <script>
+        // Audio Context
+        let audioContext;
+        let masterGainNode;
+        let reverbNode;
+        
+        // Instrument state
+        let currentInstrument = 'xylophone';
+        const xyloNotesRange = ['C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5', 'C6', 'D6', 'E6', 'F6', 'G6', 'A6'];
+        const marimbaNotesRange = ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5'];
+        
+        // Key mapping for xylophone
+        const xyloKeyMap = {
+            'a': 0, 's': 1, 'd': 2, 'f': 3, 'g': 4, 'h': 5, 'j': 6,
+            'k': 7, 'l': 8, ';': 9, "'": 10, 'z': 11, 'x': 12
+        };
+        
+        // Key mapping for marimba (extended)
+        const marimbaKeyMap = {
+            'q': 0, 'w': 1, 'e': 2, 'r': 3, 't': 4, 'y': 5, 'u': 6,
+            'i': 7, 'o': 8, 'p': 9, '[': 10, ']': 11, '\\': 12,
+            'a': 13, 's': 14, 'd': 15, 'f': 16
+        };
+        
+        // Recording functionality
+        let isRecording = false;
+        let recordedNotes = [];
+        let recordStartTime = 0;
+        let playbackTimeout;
+        
+        // Tetris Theme for Xylophone
+        // Note: Adapted to fit xylophone range (E5 = index 2, C5 = index 0, G5 = index 4)
+        const xyloDemo = [
+            // Main melody - part 1
+            { note: 2, time: 0 },     // E5
+            { note: 6, time: 250 },   // B5
+            { note: 5, time: 500 },   // A5
+            { note: 4, time: 750 },   // G5
+            { note: 3, time: 1000 },  // F5
+            { note: 2, time: 1250 },  // E5
+            { note: 1, time: 1500 },  // D5
+            { note: 0, time: 1750 },  // C5
+            { note: 1, time: 2000 },  // D5
+            { note: 2, time: 2250 },  // E5
+            { note: 3, time: 2500 },  // F5
+            { note: 1, time: 2750 },  // D5
+            { note: 0, time: 3000 },  // C5
+            { note: 0, time: 3250 },  // C5 (hold)
+            
+            // Main melody - part 2
+            { note: 1, time: 3750 },  // D5
+            { note: 3, time: 4000 },  // F5
+            { note: 5, time: 4250 },  // A5
+            { note: 4, time: 4500 },  // G5
+            { note: 3, time: 4750 },  // F5
+            { note: 2, time: 5000 },  // E5
+            { note: 2, time: 5250 },  // E5 (hold)
+            { note: 0, time: 5500 },  // C5
+            { note: 2, time: 5750 },  // E5
+            { note: 1, time: 6000 },  // D5
+            { note: 0, time: 6250 },  // C5
+            { note: 0, time: 6500 },  // C5 (hold)
+            
+            // Second section - faster pace
+            { note: 2, time: 7000 },  // E5
+            { note: 2, time: 7125 },  // E5
+            { note: 1, time: 7250 },  // D5
+            { note: 1, time: 7375 },  // D5
+            { note: 0, time: 7500 },  // C5
+            { note: 0, time: 7625 },  // C5
+            { note: 1, time: 7750 },  // D5
+            { note: 1, time: 7875 },  // D5
+            { note: 2, time: 8000 },  // E5
+            { note: 2, time: 8125 },  // E5
+            { note: 3, time: 8250 },  // F5
+            { note: 3, time: 8375 },  // F5
+            { note: 4, time: 8500 },  // G5
+            { note: 4, time: 8750 },  // G5 (hold)
+            
+            // Continuation
+            { note: 2, time: 9000 },  // E5
+            { note: 2, time: 9125 },  // E5
+            { note: 1, time: 9250 },  // D5
+            { note: 1, time: 9375 },  // D5
+            { note: 0, time: 9500 },  // C5
+            { note: 0, time: 9625 },  // C5
+            { note: 1, time: 9750 },  // D5
+            { note: 1, time: 9875 },  // D5
+            { note: 2, time: 10000 }, // E5
+            { note: 2, time: 10125 }, // E5
+            { note: 1, time: 10250 }, // D5
+            { note: 1, time: 10375 }, // D5
+            { note: 0, time: 10500 }, // C5
+            { note: 0, time: 10750 }, // C5 (hold)
+            
+            // Final section
+            { note: 1, time: 11000 }, // D5
+            { note: 1, time: 11125 }, // D5
+            { note: 3, time: 11250 }, // F5
+            { note: 3, time: 11375 }, // F5
+            { note: 5, time: 11500 }, // A5
+            { note: 5, time: 11625 }, // A5
+            { note: 4, time: 11750 }, // G5
+            { note: 4, time: 11875 }, // G5
+            { note: 3, time: 12000 }, // F5
+            { note: 3, time: 12125 }, // F5
+            { note: 2, time: 12250 }, // E5
+            { note: 2, time: 12375 }, // E5
+            { note: 1, time: 12500 }, // D5
+            { note: 1, time: 12625 }, // D5
+            { note: 0, time: 12750 }, // C5
+            { note: 0, time: 12875 }, // C5
+            { note: 0, time: 13000 }, // C5 (final)
+        ];
+        
+        // Tetris Theme (Korobeiniki) for Marimba
+        // Note: Adapted to fit marimba range (E4 = index 11, C4 = index 8, G4 = index 13)
+        const marimbaDemo = [
+            // Main melody - part 1
+            { note: 11, time: 0 },    // E4
+            { note: 15, time: 250 },  // B4
+            { note: 14, time: 500 },  // A4
+            { note: 13, time: 750 },  // G4
+            { note: 12, time: 1000 }, // F4
+            { note: 11, time: 1250 }, // E4
+            { note: 9, time: 1500 },  // D4
+            { note: 8, time: 1750 },  // C4
+            { note: 9, time: 2000 },  // D4
+            { note: 11, time: 2250 }, // E4
+            { note: 12, time: 2500 }, // F4
+            { note: 9, time: 2750 },  // D4
+            { note: 8, time: 3000 },  // C4
+            { note: 8, time: 3250 },  // C4 (hold)
+            
+            // Main melody - part 2
+            { note: 9, time: 3750 },   // D4
+            { note: 12, time: 4000 },  // F4
+            { note: 14, time: 4250 },  // A4
+            { note: 13, time: 4500 },  // G4
+            { note: 12, time: 4750 },  // F4
+            { note: 11, time: 5000 },  // E4
+            { note: 11, time: 5250 },  // E4 (hold)
+            { note: 8, time: 5500 },   // C4
+            { note: 11, time: 5750 },  // E4
+            { note: 9, time: 6000 },   // D4
+            { note: 8, time: 6250 },   // C4
+            { note: 8, time: 6500 },   // C4 (hold)
+            
+            // Second section - faster pace
+            { note: 11, time: 7000 },  // E4
+            { note: 11, time: 7125 },  // E4
+            { note: 9, time: 7250 },   // D4
+            { note: 9, time: 7375 },   // D4
+            { note: 8, time: 7500 },   // C4
+            { note: 8, time: 7625 },   // C4
+            { note: 9, time: 7750 },   // D4
+            { note: 9, time: 7875 },   // D4
+            { note: 11, time: 8000 },  // E4
+            { note: 11, time: 8125 },  // E4
+            { note: 12, time: 8250 },  // F4
+            { note: 12, time: 8375 },  // F4
+            { note: 13, time: 8500 },  // G4
+            { note: 13, time: 8750 },  // G4 (hold)
+            
+            // Continuation
+            { note: 11, time: 9000 },  // E4
+            { note: 11, time: 9125 },  // E4
+            { note: 9, time: 9250 },   // D4
+            { note: 9, time: 9375 },   // D4
+            { note: 8, time: 9500 },   // C4
+            { note: 8, time: 9625 },   // C4
+            { note: 9, time: 9750 },   // D4
+            { note: 9, time: 9875 },   // D4
+            { note: 11, time: 10000 }, // E4
+            { note: 11, time: 10125 }, // E4
+            { note: 9, time: 10250 },  // D4
+            { note: 9, time: 10375 },  // D4
+            { note: 8, time: 10500 },  // C4
+            { note: 8, time: 10750 },  // C4 (hold)
+            
+            // Final section
+            { note: 9, time: 11000 },  // D4
+            { note: 9, time: 11125 },  // D4
+            { note: 12, time: 11250 }, // F4
+            { note: 12, time: 11375 }, // F4
+            { note: 14, time: 11500 }, // A4
+            { note: 14, time: 11625 }, // A4
+            { note: 13, time: 11750 }, // G4
+            { note: 13, time: 11875 }, // G4
+            { note: 12, time: 12000 }, // F4
+            { note: 12, time: 12125 }, // F4
+            { note: 11, time: 12250 }, // E4
+            { note: 11, time: 12375 }, // E4
+            { note: 9, time: 12500 },  // D4
+            { note: 9, time: 12625 },  // D4
+            { note: 8, time: 12750 },  // C4
+            { note: 8, time: 12875 },  // C4
+            { note: 8, time: 13000 },  // C4 (final)
+        ];
+        
+        // Initialize audio context
+        function initAudio() {
+            // Create audio context on user interaction to comply with autoplay policies
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create master gain node
+            masterGainNode = audioContext.createGain();
+            masterGainNode.gain.value = 0.7;
+            
+            // Create reverb effect
+            createReverb().then(convolver => {
+                reverbNode = convolver;
+                reverbNode.connect(audioContext.destination);
+                
+                // Connect master gain to both dry and wet paths
+                masterGainNode.connect(audioContext.destination); // Dry
+                const reverbGain = audioContext.createGain();
+                reverbGain.gain.value = 0.3; // Reverb amount
+                masterGainNode.connect(reverbGain);
+                reverbGain.connect(reverbNode);
+            });
+        }
+        
+        // Create a simple reverb effect
+        async function createReverb() {
+            const convolver = audioContext.createConvolver();
+            
+            // Generate impulse response
+            const sampleRate = audioContext.sampleRate;
+            const length = 2 * sampleRate; // 2 seconds
+            const impulse = audioContext.createBuffer(2, length, sampleRate);
+            
+            for (let channel = 0; channel < 2; channel++) {
+                const impulseData = impulse.getChannelData(channel);
+                
+                // Fill with noise and apply exponential decay
+                for (let i = 0; i < length; i++) {
+                    impulseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 3);
+                }
+            }
+            
+            convolver.buffer = impulse;
+            return convolver;
+        }
+        
+        // Play a note with the appropriate timbre based on instrument
+        function playNote(noteIndex) {
+            if (!audioContext) initAudio();
+            
+            const notesRange = currentInstrument === 'xylophone' ? xyloNotesRange : marimbaNotesRange;
+            
+            if (noteIndex < 0 || noteIndex >= notesRange.length) return;
+            
+            // Calculate frequency from note name
+            const note = notesRange[noteIndex];
+            const freq = getFrequencyFromNote(note);
+            
+            // Create oscillator
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = currentInstrument === 'xylophone' ? 'sine' : 'triangle';
+            oscillator.frequency.value = freq;
+            
+            // Create envelope
+            const envelope = audioContext.createGain();
+            envelope.gain.value = 0;
+            
+            // ADSR settings based on instrument
+            const now = audioContext.currentTime;
+            const attack = currentInstrument === 'xylophone' ? 0.01 : 0.02;
+            const decay = currentInstrument === 'xylophone' ? 0.1 : 0.3;
+            const sustain = currentInstrument === 'xylophone' ? 0.0 : 0.1;
+            const release = currentInstrument === 'xylophone' ? 0.3 : 0.8;
+            
+            // Apply envelope
+            envelope.gain.setValueAtTime(0, now);
+            envelope.gain.linearRampToValueAtTime(1, now + attack);
+            envelope.gain.linearRampToValueAtTime(sustain, now + attack + decay);
+            envelope.gain.linearRampToValueAtTime(0, now + attack + decay + release);
+            
+            // Connect nodes
+            oscillator.connect(envelope);
+            envelope.connect(masterGainNode);
+            
+            // Start and stop
+            oscillator.start();
+            oscillator.stop(now + attack + decay + release + 0.1);
+            
+            // Record if recording is active
+            if (isRecording) {
+                const currentTime = Date.now() - recordStartTime;
+                recordedNotes.push({
+                    note: noteIndex,
+                    time: currentTime
+                });
+            }
+            
+            // Visual feedback
+            const bars = document.querySelectorAll(`.${currentInstrument} .bar`);
+            if (bars[noteIndex]) {
+                bars[noteIndex].classList.add('active');
+                setTimeout(() => {
+                    bars[noteIndex].classList.remove('active');
+                }, 200);
+            }
+        }
+        
+        // Convert note name to frequency
+        function getFrequencyFromNote(note) {
+            const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const noteName = note.slice(0, -1);
+            const octave = parseInt(note.slice(-1));
+            
+            const semitoneFromA4 = notes.indexOf(noteName) - notes.indexOf('A') + (octave - 4) * 12;
+            return 440 * Math.pow(2, semitoneFromA4 / 12);
+        }
+        
+        // Create instrument bars
+        function createInstrument(element, notesRange) {
+            element.innerHTML = '';
+            
+            for (let i = 0; i < notesRange.length; i++) {
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                bar.setAttribute('data-note', i);
+                
+                // Add note name at the bottom of the bar
+                bar.textContent = notesRange[i];
+                
+                bar.addEventListener('mousedown', () => playNote(i));
+                bar.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    playNote(i);
+                });
+                
+                element.appendChild(bar);
+            }
+        }
+        
+        // Create keyboard mapping display
+        function updateKeyboardMapping() {
+            const mappingElement = document.getElementById('keyboard-mapping');
+            mappingElement.innerHTML = '';
+            
+            const keyMap = currentInstrument === 'xylophone' ? xyloKeyMap : marimbaKeyMap;
+            const notesRange = currentInstrument === 'xylophone' ? xyloNotesRange : marimbaNotesRange;
+            
+            for (const [key, noteIndex] of Object.entries(keyMap)) {
+                const keyInfo = document.createElement('div');
+                keyInfo.classList.add('key-info');
+                
+                const keyElement = document.createElement('div');
+                keyElement.classList.add('key');
+                keyElement.textContent = key.toUpperCase();
+                
+                const noteElement = document.createElement('div');
+                noteElement.classList.add('note');
+                noteElement.textContent = notesRange[noteIndex];
+                
+                keyInfo.appendChild(keyElement);
+                keyInfo.appendChild(noteElement);
+                mappingElement.appendChild(keyInfo);
+            }
+        }
+        
+        // Switch between instruments
+        function switchInstrument() {
+            const xyloElement = document.getElementById('xylophone');
+            const marimbaElement = document.getElementById('marimba');
+            const toggle = document.getElementById('instrument-toggle');
+            
+            currentInstrument = toggle.checked ? 'marimba' : 'xylophone';
+            
+            if (currentInstrument === 'xylophone') {
+                xyloElement.style.display = 'flex';
+                marimbaElement.style.display = 'none';
+                document.body.style.backgroundColor = '#f8f9fa';
+            } else {
+                xyloElement.style.display = 'none';
+                marimbaElement.style.display = 'flex';
+                document.body.style.backgroundColor = '#f5efe0';
+            }
+            
+            updateKeyboardMapping();
+        }
+        
+        // Handle recording
+        function toggleRecording() {
+            const recordBtn = document.getElementById('record-btn');
+            
+            if (!isRecording) {
+                // Start recording
+                isRecording = true;
+                recordedNotes = [];
+                recordStartTime = Date.now();
+                recordBtn.classList.add('recording');
+                recordBtn.textContent = 'Recording...';
+            } else {
+                // Stop recording
+                isRecording = false;
+                recordBtn.classList.remove('recording');
+                recordBtn.textContent = 'Record';
+            }
+        }
+        
+        // Play recorded notes
+        function playRecording() {
+            if (recordedNotes.length === 0) return;
+            
+            stopPlayback();
+            
+            for (const note of recordedNotes) {
+                playbackTimeout = setTimeout(() => {
+                    playNote(note.note);
+                }, note.time);
+            }
+        }
+        
+        // Stop playback
+        function stopPlayback() {
+            clearTimeout(playbackTimeout);
+        }
+        
+        // Play demo song
+        function playDemo() {
+            const demo = currentInstrument === 'xylophone' ? xyloDemo : marimbaDemo;
+            
+            stopPlayback();
+            
+            for (const note of demo) {
+                playbackTimeout = setTimeout(() => {
+                    playNote(note.note);
+                }, note.time);
+            }
+        }
+        
+        // Initialize app
+        function init() {
+            // Create instruments
+            createInstrument(document.getElementById('xylophone'), xyloNotesRange);
+            createInstrument(document.getElementById('marimba'), marimbaNotesRange);
+            
+            // Initial keyboard mapping
+            updateKeyboardMapping();
+            
+            // Event listeners
+            document.getElementById('instrument-toggle').addEventListener('change', switchInstrument);
+            document.getElementById('record-btn').addEventListener('click', toggleRecording);
+            document.getElementById('play-btn').addEventListener('click', playRecording);
+            document.getElementById('stop-btn').addEventListener('click', stopPlayback);
+            document.getElementById('demo-btn').addEventListener('click', playDemo);
+            
+            // Keyboard controls
+            document.addEventListener('keydown', (event) => {
+                if (event.repeat) return; // Prevent key repeat
+                
+                const key = event.key.toLowerCase();
+                const keyMap = currentInstrument === 'xylophone' ? xyloKeyMap : marimbaKeyMap;
+                
+                if (key in keyMap) {
+                    playNote(keyMap[key]);
+                }
+            });
+            
+            // Initialize audio on first user interaction
+            document.addEventListener('click', () => {
+                if (!audioContext) initAudio();
+            }, { once: true });
+        }
+        
+        // Start the app
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
